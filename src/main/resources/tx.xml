@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/c" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- ioc 容器的理解配置  注入多个Class类型一样的bean-->
+    <bean id="person" class="com.atguigu.base.entity.Person">
+        <property name="name" value="左明登"/>
+        <property name="age" value="18" />
+        <property name="nation" value="China"/>
+    </bean>
+
+    <bean id="person02" class="com.atguigu.base.entity.Person">
+        <property name="name" value="zmd"/>
+        <property name="age" value="26" />
+        <property name="nation" value="China"/>
+    </bean>
+
+    <!-- 构造方法 填充bean 属性 -->
+    <bean id="personCst" class="com.atguigu.base.entity.Person" abstract="true">
+        <constructor-arg name="name" value="zhanghui"></constructor-arg>
+        <constructor-arg name="age" value="25"></constructor-arg>
+        <constructor-arg name="nation" value="China"></constructor-arg>
+    </bean>
+
+    <!-- p命名空间填充属性 -->
+    <bean id="personPns" class="com.atguigu.base.entity.Person" p:name="haha" p:age="23" p:nation="China">
+    </bean>
+
+
+    <bean id="car" class="com.atguigu.base.entity.Car">
+        <property name="carName" value="宝马"></property>
+        <property name="carColor" value="红色red"></property>
+        <property name="type" value="跑车"></property>
+    </bean>
+
+    <!-- 复杂对象属性的赋值——对象 -->
+    <bean id="personCar" class="com.atguigu.base.entity.Person" parent="personCst">
+<!--        <property name="car">-->
+<!--            <bean class="com.atguigu.base.entity.Car">-->
+<!--                <property name="carName" value="宝马"></property>-->
+<!--                <property name="carColor" value="红色red"></property>-->
+<!--                <property name="type" value="跑车"></property>-->
+<!--            </bean>-->
+<!--        </property>-->
+
+        <property name="car" ref="car">
+        </property>
+    </bean>
+
+    <bean id="book" class="com.atguigu.base.entity.Book">
+        <property name="bookName" value="西游记"></property>
+    </bean>
+
+    <!-- 复杂对象属性的赋值——List -->
+    <bean id="personList" class="com.atguigu.base.entity.Person" parent="personCst">
+        <property name="books">
+            <list>
+                <bean class="com.atguigu.base.entity.Book">
+                    <property name="bookName" value="西游记"></property>
+                </bean>
+                <ref bean="book"></ref>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 复杂对象属性的赋值——Map -->
+    <bean id="personMap" class="com.atguigu.base.entity.Person" parent="personCst">
+        <property name="map">
+            <map>
+                <entry key="1" value="ha"/>
+                <entry key="2" value-ref="book"/>
+                <entry key="3">
+                    <list>
+                        <null/>
+                        <value>123</value>
+                        <ref bean="car"></ref>
+                    </list>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <util:list id="listInfo">
+        <value>左明登</value>
+        <ref bean="book"/>
+        <bean id="personInfo" class="com.atguigu.base.entity.Person" parent="personCst"/>
+        <list>
+            <null/>
+        </list>
+    </util:list>
+
+    <util:map id="mapInfo">
+        <entry key="1" value="ha"/>
+        <entry key="2" value-ref="book"/>
+        <entry key="3">
+            <list>
+                <null/>
+                <value>123</value>
+                <ref bean="car"></ref>
+            </list>
+        </entry>
+        <entry key="4">
+            <map></map>
+        </entry>
+    </util:map>
+
+    <!-- 复杂对象属性的赋值——Properties -->
+    <bean id="personPrp" class="com.atguigu.base.entity.Person" parent="personCst">
+        <property name="car" ref="car"></property>
+        <property name="car.carName" value="奔驰"></property>
+
+        <property name="properties">
+            <props>
+                <prop key="username">root</prop>
+                <prop key="password">12334</prop>
+            </props>
+        </property>
+
+        <property name="map" ref="mapInfo">
+
+        </property>
+    </bean>
+
+    <!-- bean作用域：
+        singleton: 单实例
+            ①：容器启动前就创建好对象放入容器中
+            ②：不管何时获取的对象都是同一个对象，内存地址一致
+        prototype: 多实例
+            ①：容器启动之前不会创建实例
+            ②：getBean()获取bean时才会创建对象
+            ③：每次获取都会创建一个新的对象，内存地址不一样
+        request: 同一次请求创建一个实例
+        session: 同一次会话创建一个实例
+     -->
+    <bean id="personIns" class="com.atguigu.base.entity.Person" scope="prototype">
+    </bean>
+    <bean id="bookIns" class="com.atguigu.base.entity.Book">
+    </bean>
+    <bean id="carIns" class="com.atguigu.base.entity.Car">
+    </bean>
+
+    <!-- bean生命周期 方法 -->
+    <bean id="bookSMZQ" class="com.atguigu.base.entity.Book" init-method="initMethod"
+    destroy-method="desMethod">
+    </bean>
+
+    <!-- bean后置处理器注入ioc容器 -->
+<!--    <bean id="myBeanPostProcessor" class="com.atguigu.base.processor.MyBeanPostProcessor">-->
+<!--    </bean>-->
+
+
+    <bean id="myMathCalculator" class="com.atguigu.base.aop.MyMathCalculator">
+    </bean>
+    <bean id="logUtil" class="com.atguigu.base.aop.LogUtil">
+    </bean>
+
+    <!--
+        bean工厂创建对象：可以自定义对象的个别属性的值
+        工厂：
+            静态工厂：静态方法调用创建实例
+            实例工厂：工厂方法调用创建指定对象实例需要先创建工厂实例
+    -->
+    <!-- 静态工厂 -->
+    <bean id="airPlaneStatic" class="com.atguigu.base.factory.AirPlaneStaticBeanFactory"
+    factory-method="getInstance">
+        <constructor-arg name="jsyName" value="张三"></constructor-arg>
+    </bean>
+
+    <!-- 实例工厂 -->
+    <bean id="airPlaneFactory" class="com.atguigu.base.factory.AirPlaneBeanFactory">
+    </bean>
+    <bean id="airPlane" class="com.atguigu.base.factory.AirPlane" factory-bean="airPlaneFactory"
+    factory-method="getInstance">
+        <constructor-arg value="李四"></constructor-arg>
+    </bean>
+
+    <!-- 实现FactoryBean 工厂类 -->
+    <bean id="bookFactory" class="com.atguigu.base.factory.MyFactoryBean">
+    </bean>
+
+    <!--引入外部properties文件-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!--配置-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <aop:config proxy-target-class="false">
+        <aop:pointcut id="myPointCut" expression="execution(* com.atguigu.base.aop.MyMathCalculator.*(..))"/>
+        <aop:aspect ref="logUtil">
+            <aop:before method="logBefore" pointcut-ref="myPointCut"/>
+            <aop:after-returning method="logAfterReturning" pointcut-ref="myPointCut"/>
+            <aop:after-throwing method="logAfterThrowing" pointcut-ref="myPointCut"/>
+            <aop:after method="logAfter" pointcut-ref="myPointCut"/>
+        </aop:aspect>
+    </aop:config>
+
+
+</beans>

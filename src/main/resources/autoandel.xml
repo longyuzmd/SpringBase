@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--
+        基于xml自动装配：
+            Spring针对引用类型（自己创建的）的属性自动装配功能
+            autowire="default/no" 不自动装配
+            autowire="byName" 名称
+            autowire="byType" 类型
+            autowire="constructor"  构造器
+    -->
+    <bean id="person" class="com.atguigu.base.entity.Person" autowire="byName">
+        <property name="name" value="左明登"/>
+    </bean>
+
+    <bean id="car" class="com.atguigu.base.entity.Car">
+        <property name="carName" value="BWM"/>
+        <property name="carColor" value="#{T(java.util.UUID).randomUUID().toString()}"/>
+        <property name="type" value="#{person.getName()}"/>
+    </bean>
+
+
+</beans>
